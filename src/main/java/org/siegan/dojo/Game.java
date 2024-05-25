@@ -6,6 +6,7 @@ import org.siegan.dojo.thing.Cell;
 import org.siegan.dojo.thing.Snake;
 import org.siegan.dojo.thing.Wall;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,14 @@ public class Game {
         return new Builder();
     }
 
-    public void render(){
-        board.displayBoard();
+    public void render() throws InterruptedException, IOException {
+        while (true){
+            board.displayBoard();
+            snake.StepForward(board);
+            Thread.sleep(100);
+
+            new ProcessBuilder("clear").inheritIO().start().waitFor();
+        }
     }
 
     public static class Builder{
@@ -44,33 +51,11 @@ public class Game {
             // method membuat dinding area game
             walls = new ArrayList<>();
             for (int i = 0; i < board.getRow(); i++) {
-                if (i == 0 || i == board.getRow() -1){
-                    for (int j = 0; j < board.getCol(); j++) {
-                        Cell c = new Cell("cell", "* ", i, 0);
-                        Wall w = new Wall("wall", "*");
-                        c.AddThing(w);
-                        walls.add(w);
-                        board.putObject(new Point(j, i), c);
-                    }
+                for (int j = 0; j < board.getCol(); j++) {
+                    if (i == 0 || i == board.getRow() -1 || j == 0 || j == board.getCol() -1) {
+                        Wall w = new Wall("wall", "* ");
 
-
-                }else{
-                    for (int j = 0; j < board.getCol(); j++) {
-                        if (j == 0 || j == board.getCol()-1){
-                            Cell c = new Cell("cell", "* ", i, j);
-                            Wall w = new Wall("wall", "*");
-                            c.AddThing(w);
-                            walls.add(w);
-                            board.putObject(new Point(j, i), c);
-                        }else{
-                            Cell c = new Cell("cell", "  ", i, j);
-                            Wall w = new Wall("wall", " ");
-                            c.AddThing(w);
-                            walls.add(w);
-                            board.putObject(new Point(j, i), c);
-                        }
-
-
+                        board.putObject(new Point(j, i), w);
                     }
                 }
             }
@@ -78,6 +63,17 @@ public class Game {
         }
         public Game build(){
             return new Game(this);
+        }
+
+        public Builder createSnake(Snake snake){
+            this.snake = snake;
+            return this;
+        }
+        public Builder createSnakePopulation(){
+            if (snake != null){
+                board.putObject(snake.getHead(), snake);
+            }
+            return this;
         }
 
     }

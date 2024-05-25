@@ -28,6 +28,8 @@ public class Cell extends  Thing{
     public void DisplayCell(){
         if (thing != null){
             System.out.print(thing.getAppearance());
+        }else{
+            System.out.print("  ");
         }
     }
 

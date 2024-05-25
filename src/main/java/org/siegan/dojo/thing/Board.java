@@ -16,6 +16,7 @@ public class Board extends Thing{
         this.col = col;
         this.row = row;
         board = new ArrayList<>();
+
         for (int i = 0; i < this.row; i++) {
             board.add(new ArrayList<>());
             for (int j = 0; j < this.col; j++) {
