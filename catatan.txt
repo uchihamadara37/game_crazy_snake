@@ -1,0 +1,56 @@
+if (bengkok.size() == 1){
+                // mengecek jika ada yang sudah melalui bengkok yang cuma 1
+                if (snakeBody.getTujuan().getY() == snakeBody.getBody().getY() && snakeBody.getTujuan().getX() == snakeBody.getBody().getX()){
+//                    notif = "bengkok 1 tiba di tujuan";
+                    // tujuan akhirnya menjadi Head
+                    snakeBody.setTujuan(new Point(head.getY(), head.getX()));
+                    notif3 = "jangkrik";
+//                    notif2 = "lewat bengkok mase.";
+                    // tambahkan history bengkok yang tekah dilalui
+                    snakeBody.addHistoryFiltered(new Point(bengkok.getLast().getY(), bengkok.getLast().getX()));
+                    if (snakeBody.getHistory().isEmpty()){
+                        notif2 = "history kosong";
+                    }
+                }else {
+                    // belum lewat ==> di history tidak ada bengkokan itu
+                    if (snakeBody.isHistoryContainsThis(bengkok.getLast())){
+                        // jika sudah mengandung ini berarti telah lewat
+//                        notif = "bengkok 1 sudah lewat";
+//                        notif2 = "sudah punya history";
+                        notif3 = "konyol";
+                    }else{
+//                        notif = "bengkok 1 belum lewat";
+                        // ketika belum lewat
+                        snakeBody.setTujuan(new Point(bengkok.getLast().getY(), bengkok.getLast().getX())) ;
+                        // mengecek
+                        if (bodys.get(bodys.size()-1).getTujuan() == null){
+                            notif = "tujuan last masih null"+i;
+                        }else{
+                            notif = "tujuan last "+bodys.get(bodys.size()-1).getTujuan().getX()+","+bodys.get(bodys.size()-1).getTujuan().getX();
+                        }
+                    }
+                }
+                // jika body terakhir sedang melalui bengkok,
+                notif2 = "koordinat tail "+bodys.get(bodys.size()-1).getBody().getX()+","+bodys.get(bodys.size()-1).getBody().getY()+" bengk "+bengkok.getFirst().getX()+","+bengkok.getFirst().getY();
+                if (
+                        (bodys.get(bodys.size()-1).getBody().getY() == bengkok.getFirst().getY()) &&
+                        (bodys.get(bodys.size()-1).getBody().getX() == bengkok.getFirst().getX())
+                ){
+//                    notif = "hapus bengkok";
+                    // maka hapus bengkok
+                    bengkok.removeFirst();
+//                    notif2 = "hapus....................................";
+                    for (SnakeBody sB : bodys){
+                        // remove history
+//                        sB.removeHistory();
+                    }
+                }
+            }else{
+//                notif = "bengkok = 0";
+                snakeBody.setTujuan(new Point(head.getY(), head.getX()));
+                if (bodys.get(bodys.size()-1).getTujuan() == null){
+                    notif = "tujuan last masih null"+i;
+                }else{
+                    notif = "tujuan last "+bodys.get(bodys.size()-1).getTujuan().getX()+","+bodys.get(bodys.size()-1).getTujuan().getX();
+                }
+            }

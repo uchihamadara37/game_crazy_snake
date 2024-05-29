@@ -9,15 +9,15 @@ import java.io.IOException;
 public class Run {
     public static void main(String[] args) {
 
-        int row = 50;
-        int col = 50;
+        int row = 40;
+        int col = 40;
 
         Snake snake = Snake.getBuilder()
                 .setName("ular")
-                .setAppearance("<>")
-                .setPosX(5)
-                .setPosY(5)
-                .setSize(5)
+                .setAppearance("OO")
+                .setPosX(20)
+                .setPosY(10)
+                .setSize(8)
                 .generateBody()
                 .build();
 
@@ -29,12 +29,6 @@ public class Run {
                 .createSnakePopulation()
                 .build();
 
-        try {
-            game.render();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        game.render();
     }
 }
