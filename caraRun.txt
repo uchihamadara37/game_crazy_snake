@@ -1,3 +1,5 @@
 mvn package
 
 java -cp target/Game_Crazy_snake-1.0-SNAPSHOT.jar org.siegan.dojo.Run
+
+java -cp target/classes -Djava.library.path=lib src/main/java/org/siegan/dojo/Run.java

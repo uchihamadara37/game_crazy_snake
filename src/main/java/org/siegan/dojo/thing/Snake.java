@@ -2,24 +2,33 @@ package org.siegan.dojo.thing;
 
 import org.siegan.dojo.Arah;
 import org.siegan.dojo.Game;
+import org.siegan.dojo.Run;
 import org.siegan.dojo.model.Point;
 
 import java.util.*;
 
 public class Snake extends Thing implements AnimalBehavour{
 
+    static {
+        System.loadLibrary("setnormal");
+    }
+
     // besar ular termasuk kepalanya
     private int size;
     private Point head;
     private String name;
     // merubah body menjadi bisa memiliki 2 nilai point, 1 point untuk dirinya 1 point unytuk bengkokan terakhir yang dia lewati
-    private List<SnakeBody> bodys;
-    private Wall isiBody = new Wall("wll", "ux");
+//    private List<SnakeBody> bodys;
+    private List<Point> bodys;
+    private Body isiBody = new Body("wll", "ux");
     private List<Point> bengkok = new ArrayList<>();
     private Arah arah = Arah.RIGHT;
     public static String notif = "";
     public static String notif2 = "";
     public static String notif3 = "";
+
+    private Point temp1 = new Point(0,0);
+    private Point temp2 = new Point(0,0);
 
 
     public Snake(Builder builder) {
@@ -28,50 +37,180 @@ public class Snake extends Thing implements AnimalBehavour{
         this.bodys = builder.getBodys();
         this.size = builder.getSize();
 
+    }
 
-        Timer timer = new Timer();
+    @Override
+    public Point getPointForward(Board board) {
 
-//        timer.schedule(new ChangeDirectionTask(), 4000, 4000);
+//        if (arah == Arah.RIGHT){
+//            // pembatas pinggir
+//            if (head.getY() < board.getCol() - 2){
+//                return new Point(head.getY()+1, head.getX());
+//            }else if (head.getY() == board.getCol() -2){
+//                return new Point(1, head.getX());
+//            }
+//        }else if (arah == Arah.DOWN){
+//            // pembatas pinggir
+//            if (head.getX() < board.getRow() - 2){
+//                return new Point(head.getY(), head.getX()+1);
+//            }else if (head.getX() == board.getRow() -2){
+//                return new Point(head.getY(), 1);
+//            }
+//        }else if (arah == Arah.LEFT){
+//            // pembatas pinggir
+//            if (head.getY() > 1){
+//                return new Point(head.getY()-1, head.getX());
+//            }else if (head.getY() == 1){
+//                return new Point(board.getCol()-2, head.getX());
+//            }
+//        }else if (arah == Arah.UP){
+//            // pembatas pinggir
+//            if (head.getX() > 1){
+//                return new Point(head.getY(), head.getX()-1);
+//            }else if (head.getX() == 1){
+//                return new Point(head.getY(), board.getRow()-2);
+//            }
+//        }
+        if (arah == Arah.RIGHT){
+            return new Point(head.getY()+1, head.getX());
+        }else if (arah == Arah.DOWN){
+            return new Point(head.getY(), head.getX()+1);
+        }else if (arah == Arah.LEFT){
+            return new Point(head.getY()-1, head.getX());
+        }else if (arah == Arah.UP){
+            return new Point(head.getY(), head.getX()-1);
+        }
+        throw new RuntimeException("jangkrik forward");
+    }
+
+    @Override
+    public Point getPointRight(Board board) {
+//        notif2 = "pointRight";
+        if (arah == Arah.RIGHT){
+            // ke bawah
+            if (head.getX() < board.getRow() - 2){
+                return new Point(head.getY(), head.getX()+1);
+            }else if (head.getX() == board.getRow() -2){
+                return new Point(head.getY(), 1);
+            }
+        }else if (arah == Arah.DOWN){
+
+            // ke kiri
+            if (head.getY() > 1){
+                return new Point(head.getY()-1, head.getX());
+            }else if (head.getY() == 1){
+                return new Point(board.getCol()-2, head.getX());
+            }
+        }else if (arah == Arah.LEFT){
+
+            // ke atas
+            if (head.getX() > 1){
+                return new Point(head.getY(), head.getX()-1);
+            }else if (head.getX() == 1){
+                return new Point(head.getY(), board.getRow()-2);
+            }
+        }else if (arah == Arah.UP){
+
+            // ke kanan
+            if (head.getY() < board.getCol() - 2){
+                return new Point(head.getY()+1, head.getX());
+            }else if (head.getY() == board.getCol() -2){
+                return new Point(1, head.getX());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Point getPointLeft(Board board) {
+//        notif2 = "pointLeft";
+        if (arah == Arah.RIGHT){
+            // ke atas
+            if (head.getX() > 1){
+                return new Point(head.getY(), head.getX()-1);
+            }else if (head.getX() == 1){
+                return new Point(head.getY(), board.getRow()-2);
+            }
+        }else if (arah == Arah.DOWN){
+            // ke kanan
+            if (head.getY() < board.getCol() - 2){
+                return new Point(head.getY()+1, head.getX());
+            }else if (head.getY() == board.getCol() -2){
+                return new Point(1, head.getX());
+            }
+        }else if (arah == Arah.LEFT){
+            // ke bawah
+            if (head.getX() < board.getRow() - 2){
+                return new Point(head.getY(), head.getX()+1);
+            }else if (head.getX() == board.getRow() -2){
+                return new Point(head.getY(), 1);
+            }
+        }else if (arah == Arah.UP){
+            // ke kiri
+            if (head.getY() > 1){
+                return new Point(head.getY()-1, head.getX());
+            }else if (head.getY() == 1){
+                return new Point(board.getCol()-2, head.getX());
+            }
+        }
+        return null;
+    }
+
+    public void getPointBackward(Board board){
 
     }
+
     @Override
     public void StepForward(Board board) {
         // gerakan kepala
         board.putObject(head, null);
+        temp1.setX(head.getX());
+        temp1.setY(head.getY());
 
-        if (arah == Arah.RIGHT){
-            // pembatas pinggir
-            if (head.getY() < board.getCol() - 2){
-                head.setY(head.getY()+1);
-            }else if (head.getY() == board.getCol() -2){
-                head.setY(1);
-//                arah = Arah.DOWN;
+        temp2.setX(getPointForward(board).getX());
+        temp2.setY(getPointForward(board).getY());
+        notif =  "Koordinat head : "+head.getX()+","+head.getY();
+        notif2 =  "Koordinat temp2 : "+temp2.getX()+","+temp2.getY();
+
+        if (board.getElement(temp2) instanceof Buah ){
+            int score = ((Buah) board.getElement(temp2)).getScore();
+            this.size = this.size + score;
+            // set appearance jumlah di kepala;
+            String kepala = "";
+            if (this.size < 10 ){
+                kepala = "0"+this.size;
+            }else if (size < 100){
+                kepala = Integer.toString(size);
+            }else{
+                kepala = ":)";
             }
-        }else if (arah == Arah.DOWN){
-            // pembatas pinggir
-            if (head.getX() < board.getRow() - 2){
-                head.setX(head.getX()+1);
-            }else if (head.getX() == board.getRow() -2){
-                head.setX(1);
-//                arah = Arah.LEFT;
+            this.setAppearance(kepala);
+            for (int i = 0; i < score; i++) {
+                // secara default ngetem di koordinat 1,1 dahulu sebelum nanti ngikut teman2nya
+                bodys.add(new Point(1, 1));
             }
-        }else if (arah == Arah.LEFT){
-            // pembatas pinggir
-            if (head.getY() > 1){
-                head.setY(head.getY()-1);
-            }else if (head.getY() == 1){
-                head.setY(board.getCol()-2);
-//                arah = Arah.UP;
-            }
-        }else if (arah == Arah.UP){
-            // pembatas pinggir
-            if (head.getX() > 1){
-                head.setX(head.getX()-1);
-            }else if (head.getX() == 1){
-                head.setX(board.getRow()-2);
-//                arah = Arah.RIGHT;
-            }
+        }else if (board.getElement(temp2) instanceof Body){
+            Game.gameRunning = false;
+            System.out.println("Menabrak body Mase...");
+//            terminalRawToNormal();
+//            Run.terminalRawToNormal();
+//            throw new RuntimeException("menabrak body mase"+
+//                    "\nKoordinat depan : "+temp2.getX()+","+temp2.getY()+
+//                    "\nKoordinat head : "+head.getX()+","+head.getY());
+
         }
+        else if (board.getElement(temp2) instanceof Wall){
+            Game.gameRunning = false;
+            System.out.println("Menabrak wall Mase...");
+//            terminalRawToNormal();
+//            Run.terminalRawToNormal();
+//            throw new RuntimeException("menabrak Wall mase"+
+//                    "\nKoordinat depan : "+temp2.getX()+","+temp2.getY()+
+//                    "\nKoordinat head : "+head.getX()+","+head.getY());
+        }
+        head.setX(temp2.getX());
+        head.setY(temp2.getY());
+
         // menampilkan head kembali
         board.putObject(head, this);
         // mulai menggerakan body
@@ -79,156 +218,19 @@ public class Snake extends Thing implements AnimalBehavour{
     }
 
     void StepBody(Board board){
-        int i = 1;
-        for (SnakeBody snakeBody : bodys){
-            if (!bengkok.isEmpty()){
-                // mengecek jika ada yang sudah melalui bengkok yang cuma 1
-                if (snakeBody.getTujuan().getY() == snakeBody.getBody().getY() && snakeBody.getTujuan().getX() == snakeBody.getBody().getX()){
-//                    notif = "bengkok 1 tiba di tujuan";
-                    // tujuan akhirnya menjadi Head
-                    snakeBody.addHistoryFiltered(new Point(snakeBody.getTujuan().getY(), snakeBody.getTujuan().getX()));
-                    for (Point bengk : bengkok){
-                        if (snakeBody.isHistoryContainsThis(bengk)){
-                            snakeBody.setTujuan(new Point(head.getY(), head.getX()));
-                        }else{
-                            snakeBody.setTujuan(new Point(bengk.getY(), bengk.getX()));
-                            break;
-                        }
-                    }
-                    notif3 = "jangkrik";
-//                    notif2 = "lewat bengkok mase.";
-                    // tambahkan history bengkok yang tekah dilalui
-                    if (snakeBody.getHistory().isEmpty()){
-                        notif2 = "history kosong";
-                    }
-                }
-                // jika body terakhir sedang melalui bengkok,
-//                notif2 = "koordinat tail "+bodys.get(bodys.size()-1).getBody().getX()+","+bodys.get(bodys.size()-1).getBody().getY()+" bengk "+bengkok.getFirst().getX()+","+bengkok.getFirst().getY();
-                if (
-                        (bodys.getLast().getBody().getY() == bengkok.getFirst().getY()) &&
-                        (bodys.getLast().getBody().getX() == bengkok.getFirst().getX())
-                ){
-                    for (SnakeBody sB : bodys){
-                        // remove history
-                        sB.removeHistory(bengkok.getFirst());
-                    }
-                    bengkok.removeFirst();
-                    notif = "menghapus history";
-                }
-            }else{
-                // jika tidak ada bengkok
-                snakeBody.setTujuan(new Point(head.getY(), head.getX()));
-            }
-            notif = "bengkok ada "+bengkok.size();
-            if (snakeBody.getTujuan() == null){
-                throw new RuntimeException("tujuan malah masih kosong");
-            }
-
-            // identifikasi posisi body dari tujuan secara vertical dan horizontal
-            if (snakeBody.getBody().getX() == snakeBody.getTujuan().getX()){
-                if (
-                        (snakeBody.getBody().getY() < snakeBody.getTujuan().getY() &&
-                        (snakeBody.getTujuan().getY() - snakeBody.getBody().getY()) <= getSize() &&
-                        (snakeBody.getTujuan().getY()-snakeBody.getBody().getY() > 0))
-                        ||
-                        ((snakeBody.getBody().getY() > snakeBody.getTujuan().getY()) &&
-                        (snakeBody.getTujuan().getY() - snakeBody.getBody().getY()) <= -(board.getCol()-getSize() - 2))
-                ) {
-                    // maka tujuan berada di kanannya, menuju kanan meski tujuan sudah jadi 1 lagi.
-                    if (snakeBody.getBody().getY() < board.getCol() -2){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setY(snakeBody.getBody().getY() + 1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }else if (snakeBody.getBody().getY() == board.getCol() -2){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setY(1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }
-
-                }else if (
-                        ((snakeBody.getBody().getY() > snakeBody.getTujuan().getY()) &&
-                        (snakeBody.getBody().getY() - snakeBody.getTujuan().getY()) <= getSize() &&
-                        (snakeBody.getBody().getY() - snakeBody.getTujuan().getY()) > 0)
-                        ||
-                        ((snakeBody.getBody().getY() < snakeBody.getTujuan().getY()) &&
-                        (snakeBody.getTujuan().getY() - snakeBody.getBody().getY()) >= (board.getCol()-getSize() - 2))
-                ){
-                    // maka tujaun berada di sebelah kirinya, menuju kiri
-                    if (snakeBody.getBody().getY() > 1){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setY(snakeBody.getBody().getY()-1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }else if (snakeBody.getBody().getY() == 1){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setY(board.getCol() - 2);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }
-
-                }else{
-//                        notif2 = "sama x malah sama y indx"+i;
-
-                        throw new RuntimeException("x sama tapi y malah sama index ke "+i+"\n Koordinat = "+snakeBody.getBody().getX()+","+snakeBody.getBody().getY()+" tujuan : "+snakeBody.getTujuan().getX()+","+snakeBody.getTujuan().getY());
-//                        snakeBody.setTujuan(null);
-//                        snakeBody.addHistoryFiltered(new Point(snakeBody.getTujuan().getY(), snakeBody.getTujuan().getX()));
-//                        snakeBody.setTujuan(new Point(head.getY(), head.getX()));
-                }
-            }else if (snakeBody.getBody().getY() == snakeBody.getTujuan().getY()){
-                if (
-                    ((snakeBody.getBody().getX() < snakeBody.getTujuan().getX()) &&
-                    (snakeBody.getTujuan().getX() - snakeBody.getBody().getX() <= getSize()) &&
-                    (snakeBody.getTujuan().getX() - snakeBody.getBody().getX() > 0))
-                    ||
-                    ((snakeBody.getBody().getX() > snakeBody.getTujuan().getX()) &&
-                    (snakeBody.getTujuan().getX() - snakeBody.getBody().getX() <= -(board.getRow() - getSize() - 2)))
-                ){
-                    // jika minus maka tujuannya berada di bawahnya
-                    if (snakeBody.getBody().getX() < board.getRow() - 2){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setX(snakeBody.getBody().getX()+1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }else if (snakeBody.getBody().getX() == board.getRow() - 2){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setX(1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }
-                }else if (
-                        ((snakeBody.getBody().getX() > snakeBody.getTujuan().getX()) &&
-                        (snakeBody.getBody().getX() - snakeBody.getTujuan().getX() <= getSize()) &&
-                        (snakeBody.getBody().getX() - snakeBody.getTujuan().getX() > 0))
-                        ||
-                        ((snakeBody.getBody().getX() < snakeBody.getTujuan().getX()) &&
-                        (snakeBody.getBody().getX() - snakeBody.getTujuan().getX() <= -(board.getRow()-getSize()-2)))
-                ){
-                    // maka tujuan berada di atasnya
-                    if (snakeBody.getBody().getX() > 1){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setX(snakeBody.getBody().getX()-1);
-                        board.putObject(snakeBody.getBody(), isiBody);
-                    }else if (snakeBody.getBody().getX() == 1){
-                        board.putObject(snakeBody.getBody(), null);
-                        snakeBody.getBody().setX(board.getRow()-2);
-                        board.putObject(snakeBody.getBody(), isiBody);
-//                            notif2 = "lewat munggaaaaahh mase.";
-                    }
-                }else{
-//                        notif2 = "sama y malah sama x";
-                        throw new RuntimeException("y sama tapi x sama");
-//                        snakeBody.addHistoryFiltered(new Point(snakeBody.getTujuan().getY(), snakeBody.getTujuan().getX()));
-//                        snakeBody.setTujuan(new Point(head.getY(), head.getX()));
-                }
-            }else{
-//                    throw new RuntimeException("yongalah");
-                    boolean punya = snakeBody.isHistoryContainsThis(bengkok.getLast());
-                    throw new RuntimeException("Yongalah index ke "+i+
-                            "\nKoordinat = "+snakeBody.getBody().getX()+","+snakeBody.getBody().getY()+" tujuan : "+snakeBody.getTujuan().getX()+","+snakeBody.getTujuan().getY() +
-                            "\nBengkok ada "+bengkok.size() + " terakhir di: "+bengkok.getLast().getX()+","+bengkok.getLast().getY()+
-                            "\nHistory yang ada : sejumlah "+snakeBody.getHistory().size()+" koordinat1 "+snakeBody.getHistory().getFirst().getX()+","+snakeBody.getHistory().getFirst().getY()+
-                            "\nHistory punya history bengkok terakhir : "+punya);
-//                    notif2 = "kacau, beda x beda y";
-            }
-
-            i++;
-        } // end for bodys
+//        i
+        // cara temp tetapi tembus
+        // mencoba arah normal dahulu
+        for (Point bd : bodys){
+            board.putObject(bd, null);
+            temp2.setX(bd.getX());
+            temp2.setY(bd.getY());
+            bd.setX(temp1.getX());
+            bd.setY(temp1.getY());
+            temp1.setX(temp2.getX());
+            temp1.setY(temp2.getY());
+            board.putObject(bd, isiBody);
+        }
     }
 
     public int getSize() {
@@ -237,16 +239,26 @@ public class Snake extends Thing implements AnimalBehavour{
 
     public void UbahArah(Arah arah){
         if (
-            (this.arah == Arah.RIGHT && arah == Arah.RIGHT) || (this.arah == Arah.RIGHT && arah == Arah.LEFT) ||
-            (this.arah == Arah.DOWN && arah == Arah.DOWN) || (this.arah == Arah.DOWN && arah == Arah.UP) ||
-            (this.arah == Arah.LEFT && arah == Arah.LEFT) || (this.arah == Arah.LEFT && arah == Arah.RIGHT) ||
-            (this.arah == Arah.UP && arah == Arah.UP) || (this.arah == Arah.UP && arah == Arah.DOWN)
+                // logika di sini masih salah
+//            (this.arah == Arah.RIGHT && arah == Arah.RIGHT) || (this.arah == Arah.RIGHT && arah == Arah.LEFT) ||
+//            (this.arah == Arah.DOWN && arah == Arah.DOWN) || (this.arah == Arah.DOWN && arah == Arah.UP) ||
+//            (this.arah == Arah.LEFT && arah == Arah.LEFT) || (this.arah == Arah.LEFT && arah == Arah.RIGHT) ||
+//            (this.arah == Arah.UP && arah == Arah.UP) || (this.arah == Arah.UP && arah == Arah.DOWN)
+                // mencoba
+                // saat arah ke kanan
+            ((bodys.getFirst().getX() == head.getX() && bodys.getFirst().getY() == head.getY()-1) && (arah == Arah.RIGHT || arah == Arah.LEFT)) ||
+                // saat arah ke kiri
+            ((bodys.getFirst().getX() == head.getX() && bodys.getFirst().getY() == head.getY()+1) && (arah == Arah.RIGHT || arah == Arah.LEFT)) ||
+                // saat arah ke atas
+            ((bodys.getFirst().getX() == head.getX()+1 && bodys.getFirst().getY() == head.getY()) && (arah == Arah.UP || arah == Arah.DOWN)) ||
+                // saat arah ke bawah
+            ((bodys.getFirst().getX() == head.getX()-1 && bodys.getFirst().getY() == head.getY()) && (arah == Arah.UP || arah == Arah.DOWN))
         ){
             // maka arah tidak perlu diubah
         }else{
             this.arah = arah;
-            notif3 = arah.toString();
-            bengkok.add(new Point(head.getY(), head.getX()));
+//            notif3 = arah.toString();
+//            notif3 = Game.arahe.toString();
 
         }
     }
@@ -277,7 +289,7 @@ public class Snake extends Thing implements AnimalBehavour{
         return head;
     }
 
-    public List<SnakeBody> getBodys() {
+    public List<Point> getBodys() {
         return bodys;
     }
 
@@ -293,14 +305,14 @@ public class Snake extends Thing implements AnimalBehavour{
         private String name;
         private String appearance;
         private int posX, posY;
-        private List<SnakeBody> bodys;
+        private List<Point> bodys;
 
         public Builder setSize(int size) {
             this.size = size;
             return this;
         }
 
-        public List<SnakeBody> getBodys() {
+        public List<Point> getBodys() {
             return bodys;
         }
 
@@ -353,12 +365,9 @@ public class Snake extends Thing implements AnimalBehavour{
             return new Point(posY, posX);
         }
         public Builder generateBody(){
-            bodys = new ArrayList<SnakeBody>();
+            bodys = new ArrayList<Point>();
             for (int i = 1; i <= getSize() - 1; i++) {
-                SnakeBody group =  new SnakeBody();
-                group.setBody(new Point(posY-i, posX));
-
-                bodys.add(group);
+                bodys.add(new Point(posY-i, posX));
             }
             return this;
         }
@@ -367,5 +376,6 @@ public class Snake extends Thing implements AnimalBehavour{
         }
     }
 
+    public static native void terminalRawToNormal();
 
 }

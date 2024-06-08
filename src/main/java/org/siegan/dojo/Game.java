@@ -11,14 +11,16 @@ import java.util.Scanner;
 
 //    class untuk mengkontrol jalannya game
 public class Game {
+
+    private static final Object lock = new Object();
+    public static Arah arahe;
+
     private final Board board;
     private List<Wall> walls;
     private Snake snake;
     private int speed;
 //    private Scanner sc = new Scanner(System.in);
-    private static boolean gameRunning = true;
-
-    private static final Object lock = new Object();
+    public static boolean gameRunning = true;
 
     public Game(Builder builder){
         this.board = builder.board;
@@ -36,51 +38,75 @@ public class Game {
     private class InputHandler implements Runnable {
         @Override
         public void run() {
-            try {
-                while (gameRunning) {
-                    int input = System.in.read();
-                    while (System.in.available() > 0) {
-                        System.in.read(); // Membersihkan buffer
-                    }
 
+            while(gameRunning) {
+                try {
+                    int input = System.in.read();
+    //                    while (System.in.available() > 0) {
+    //                        System.in.read(); // Membersihkan buffer
+    //                    }
+                    if (input != -1) { // Periksa apakah ada input
+                        if (input == '\n') { // Jika input adalah newline, baca karakter berikutnya
+                            input = System.in.read();
+                        }
+                    }
                     // Periksa input dan lakukan tindakan yang sesuai
-                    synchronized (lock){
+                    synchronized (Game.lock) {
+                        System.out.println("input e " + input);
                         switch (input) {
                             case 'w':
                                 // Gerakkan ular ke atas
-//                                System.out.println("w");
-                                snake.UbahArah(Arah.UP);
+    //                                System.out.println("w");
+    //                                snake.UbahArah(Arah.UP);
+                                System.out.println("atas pkpk");
+                                Game.arahe = Arah.UP;
                                 break;
                             case 'a':
                                 // Gerakkan ular ke kiri
                                 //System.out.println("A");
-                                snake.UbahArah(Arah.LEFT);
+    //                                snake.UbahArah(Arah.LEFT);
+                                System.out.println("kiri pkpk");
+                                Game.arahe = Arah.LEFT;
                                 break;
                             case 's':
                                 // Gerakkan ular ke bawah
                                 //System.out.println("S");
-                                snake.UbahArah(Arah.DOWN);
+    //                                snake.UbahArah(Arah.DOWN);
+                                System.out.println("bawah pkpk");
+                                Game.arahe = Arah.DOWN;
                                 break;
                             case 'd':
                                 // Gerakkan ular ke kanan
                                 //System.out.println("D");
-                                snake.UbahArah(Arah.RIGHT);
+    //                                snake.UbahArah(Arah.RIGHT);
+                                System.out.println("kanan pkpk");
+                                Game.arahe = Arah.RIGHT;
                                 break;
                             // Tambahkan kasus lain jika diperlukan
                         }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
         }
     }
 
     public void render(){
+//        synchronized (Game.lock){
+//            Game.arahe = Arah.RIGHT;
+//        }
         try {
             int ok = 1;
+            int ok2 = 1;
             while (gameRunning){
+                new ProcessBuilder("clear").inheritIO().start().waitFor();
+
                 ok = (ok + 1 ) % 4;
+                ok2 = (ok2 + 1) % 10;
+
+
                 board.displayBoard();
                 snake.StepForward(board);
 
@@ -88,13 +114,22 @@ public class Game {
                 snake.showNotif2();
                 snake.showNotif3();
                 if (ok == 0){
-                    Random random = new Random();
-                    Arah arah = Arah.values()[random.nextInt(Arah.values().length)];
-                    snake.UbahArah(arah);
+//                    Random random = new Random();
+//                    Arah arah = Arah.values()[random.nextInt(Arah.values().length)];
+//                    snake.UbahArah(arah);
                 }
-                Thread.sleep(200);
 
-                new ProcessBuilder("clear").inheritIO().start().waitFor();
+                if (ok2 == 0){
+                    Random random2 = new Random();
+                    int KoorX = random2.nextInt(board.getRow()-2)+1;
+                    int KoorY = random2.nextInt(board.getRow()-2)+1;
+                    Buah buah = new Buah("buah", "OK", KoorX, KoorY);
+
+                    board.putObject(buah.getKoordinat(), buah);
+                }
+
+                Thread.sleep(100);
+
 
             }
         } catch (InterruptedException e) {
@@ -109,6 +144,7 @@ public class Game {
         Board board;
         List<Wall> walls;
         Snake snake;
+        List<Buah> listBuah = new ArrayList<>();
         int speed;
 
         public Builder createBoard(int row, int col){
@@ -142,10 +178,22 @@ public class Game {
                 board.putObject(snake.getHead(), snake);
                 if (!snake.getBodys().isEmpty()){
                     int i = 1;
-                    for(SnakeBody sb : snake.getBodys()){
-                        board.putObject(sb.getBody(), new Wall("wall", "o"+i));
+                    for(Point sb : snake.getBodys()){
+                        board.putObject(sb, new Body("body", "o"+i));
                         i++;
                     }
+                }
+            }
+            return this;
+        }
+        public Builder addBuah(Buah buah){
+            this.listBuah.add(buah);
+            return this;
+        }
+        public Builder putBuahOnBoard(){
+            if (!listBuah.isEmpty()){
+                for (Buah buah : listBuah){
+                    board.putObject(buah.getKoordinat(), buah);
                 }
             }
             return this;

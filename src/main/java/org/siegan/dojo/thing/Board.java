@@ -48,6 +48,9 @@ public class Board extends Thing{
             this.getBoard().get(point.getX()).get(point.getY()).removeThing();
         }
     }
+    public Thing getElement(Point koordinat){
+        return board.get(koordinat.getX()).get(koordinat.getY()).getThing();
+    }
 
     public List<List<Cell>> getBoard() {
         return board;

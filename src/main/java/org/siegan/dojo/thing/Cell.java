@@ -4,7 +4,7 @@ public class Cell extends  Thing{
 
     private final int row;
     private final int col;
-    private Thing thing;
+    private Thing thing = null;
 
     public Cell(String name, String appearance, int row, int col) {
         super(name, appearance);
@@ -21,6 +21,9 @@ public class Cell extends  Thing{
     }
     public void AddThing(Thing thing){
         this.thing = thing;
+    }
+    public Thing getThing(){
+        return thing;
     }
     public void removeThing(){
         this.thing = null;
