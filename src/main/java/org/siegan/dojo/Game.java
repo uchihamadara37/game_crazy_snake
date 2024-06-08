@@ -98,28 +98,32 @@ public class Game {
 //            Game.arahe = Arah.RIGHT;
 //        }
         try {
-            int ok = 1;
             int ok2 = 1;
             while (gameRunning){
                 new ProcessBuilder("clear").inheritIO().start().waitFor();
 
-                ok = (ok + 1 ) % 4;
                 ok2 = (ok2 + 1) % 10;
 
 
                 board.displayBoard();
-                snake.StepForward(board);
+//                snake.StepForward(board);
 
                 snake.showNotif();
                 snake.showNotif2();
                 snake.showNotif3();
-                if (ok == 0){
-//                    Random random = new Random();
-//                    Arah arah = Arah.values()[random.nextInt(Arah.values().length)];
-//                    snake.UbahArah(arah);
+
+                boolean checkAdaBuah = false;
+                for(int i = 1; i < board.getRow()-1; i++){
+                    for (int j = 0; j < board.getCol()-1; j++) {
+                        if (board.getElement(new Point(j, i)) instanceof Buah){
+                            checkAdaBuah = true;
+                            break;
+                        }
+                    }
                 }
 
-                if (ok2 == 0){
+//                if (ok2 == 0){
+                if (!checkAdaBuah){
                     Random random2 = new Random();
                     int KoorX = random2.nextInt(board.getRow()-2)+1;
                     int KoorY = random2.nextInt(board.getRow()-2)+1;
@@ -128,7 +132,48 @@ public class Game {
                     board.putObject(buah.getKoordinat(), buah);
                 }
 
-                Thread.sleep(100);
+                if (snake.getLevel() == 0){
+                    Thread.sleep(200);
+                    Snake.notif3 = "Level 0";
+                    if (snake.getSize() == 7){
+                        snake.setLevel(1);
+                        // menghapus body
+                        for (int i = snake.getBodys().size()-1; i > 2; i--) {
+                            board.putObject(snake.getBodys().getLast(), null);
+                            snake.getBodys().removeLast();
+                        }
+                        snake.setSize(4);
+                    }
+                }else if (snake.getLevel() == 1){
+                    Thread.sleep(150);
+                    Snake.notif3 = "Level 1";
+                    if (snake.getSize() == 15){
+                        snake.setLevel(2);
+                        // menghapus body
+                        for (int i = snake.getBodys().size()-1; i > 2; i--) {
+                            board.putObject(snake.getBodys().getLast(), null);
+                            snake.getBodys().removeLast();
+                        }
+                        snake.setSize(4);
+                    }
+
+                }else if (snake.getLevel() == 2){
+                    Thread.sleep(100);
+                    Snake.notif3 = "Level 2";
+                    if (snake.getSize() == 20){
+                        snake.setLevel(3);
+                        // menghapus body
+                        for (int i = snake.getBodys().size()-1; i > 2; i--) {
+                            board.putObject(snake.getBodys().getLast(), null);
+                            snake.getBodys().removeLast();
+                        }
+                        snake.setSize(4);
+                    }
+                }else{
+                    Thread.sleep(70);
+                    Snake.notif3 = "Level Ultimate";
+                }
+                snake.StepForward(board);
 
 
             }

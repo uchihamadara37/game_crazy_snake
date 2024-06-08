@@ -22,7 +22,7 @@ public class Run {
             .setAppearance("OO")
             .setPosX(20)
             .setPosY(15)
-            .setSize(8)
+            .setSize(6)
             .generateBody()
             .build();
     static Game game = Game.getBuilder()

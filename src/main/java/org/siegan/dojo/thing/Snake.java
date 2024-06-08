@@ -30,6 +30,7 @@ public class Snake extends Thing implements AnimalBehavour{
     private Point temp1 = new Point(0,0);
     private Point temp2 = new Point(0,0);
 
+    private int level = 0;
 
     public Snake(Builder builder) {
         super(builder.getName(), builder.getAppearance());
@@ -42,44 +43,46 @@ public class Snake extends Thing implements AnimalBehavour{
     @Override
     public Point getPointForward(Board board) {
 
-//        if (arah == Arah.RIGHT){
-//            // pembatas pinggir
-//            if (head.getY() < board.getCol() - 2){
-//                return new Point(head.getY()+1, head.getX());
-//            }else if (head.getY() == board.getCol() -2){
-//                return new Point(1, head.getX());
-//            }
-//        }else if (arah == Arah.DOWN){
-//            // pembatas pinggir
-//            if (head.getX() < board.getRow() - 2){
-//                return new Point(head.getY(), head.getX()+1);
-//            }else if (head.getX() == board.getRow() -2){
-//                return new Point(head.getY(), 1);
-//            }
-//        }else if (arah == Arah.LEFT){
-//            // pembatas pinggir
-//            if (head.getY() > 1){
-//                return new Point(head.getY()-1, head.getX());
-//            }else if (head.getY() == 1){
-//                return new Point(board.getCol()-2, head.getX());
-//            }
-//        }else if (arah == Arah.UP){
-//            // pembatas pinggir
-//            if (head.getX() > 1){
-//                return new Point(head.getY(), head.getX()-1);
-//            }else if (head.getX() == 1){
-//                return new Point(head.getY(), board.getRow()-2);
-//            }
-//        }
         if (arah == Arah.RIGHT){
-            return new Point(head.getY()+1, head.getX());
+            // pembatas pinggir
+            if (head.getY() < board.getCol() - 2){
+                return new Point(head.getY()+1, head.getX());
+            }else if (head.getY() == board.getCol() -2){
+                return new Point(1, head.getX());
+            }
         }else if (arah == Arah.DOWN){
-            return new Point(head.getY(), head.getX()+1);
+            // pembatas pinggir
+            if (head.getX() < board.getRow() - 2){
+                return new Point(head.getY(), head.getX()+1);
+            }else if (head.getX() == board.getRow() -2){
+                return new Point(head.getY(), 1);
+            }
         }else if (arah == Arah.LEFT){
-            return new Point(head.getY()-1, head.getX());
+            // pembatas pinggir
+            if (head.getY() > 1){
+                return new Point(head.getY()-1, head.getX());
+            }else if (head.getY() == 1){
+                return new Point(board.getCol()-2, head.getX());
+            }
         }else if (arah == Arah.UP){
-            return new Point(head.getY(), head.getX()-1);
+            // pembatas pinggir
+            if (head.getX() > 1){
+                return new Point(head.getY(), head.getX()-1);
+            }else if (head.getX() == 1){
+                return new Point(head.getY(), board.getRow()-2);
+            }
         }
+
+        // yang menabrak tembok
+//        if (arah == Arah.RIGHT){
+//            return new Point(head.getY()+1, head.getX());
+//        }else if (arah == Arah.DOWN){
+//            return new Point(head.getY(), head.getX()+1);
+//        }else if (arah == Arah.LEFT){
+//            return new Point(head.getY()-1, head.getX());
+//        }else if (arah == Arah.UP){
+//            return new Point(head.getY(), head.getX()-1);
+//        }
         throw new RuntimeException("jangkrik forward");
     }
 
@@ -221,6 +224,9 @@ public class Snake extends Thing implements AnimalBehavour{
 //        i
         // cara temp tetapi tembus
         // mencoba arah normal dahulu
+
+//        notif3 = "jumlah body = "+bodys.size();
+
         for (Point bd : bodys){
             board.putObject(bd, null);
             temp2.setX(bd.getX());
@@ -235,6 +241,14 @@ public class Snake extends Thing implements AnimalBehavour{
 
     public int getSize() {
         return size;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public void UbahArah(Arah arah){
@@ -378,4 +392,10 @@ public class Snake extends Thing implements AnimalBehavour{
 
     public static native void terminalRawToNormal();
 
+//    public void generateBody(){
+//        bodys = new ArrayList<Point>();
+//        for (int i = 1; i <= getSize() - 1; i++) {
+//            bodys.add(new Point(head.getY()-i, head.getX()));
+//        }
+//    }
 }
